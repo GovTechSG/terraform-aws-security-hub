@@ -11,7 +11,7 @@ module "security_hub" {
     "aws-foundational-security-best-practices" = ["IAM.1", "EC2.10"]
     "cis-aws-foundations-benchmark" = ["IAM.6", "CloudTrail.2"]
   }
-  
+
   tags = {
     Environment = "production"
     Project     = "security-compliance"
@@ -50,7 +50,7 @@ module "security_hub" {
     "aws-foundational-security-best-practices" = ["IAM.1", "EC2.10"]
     "cis-aws-foundations-benchmark" = ["1.10", "2.7"]
   }
-  
+
   tags = {
     Environment = "production"
     Project     = "security-compliance"
@@ -74,9 +74,9 @@ This module supports the following AWS Security Hub standards:
    - Includes security best practices recommended by AWS security experts
 
 2. **CIS AWS Foundations Benchmark**
-   - ID: `cis-aws-foundations-benchmark` (defaults to v1.2.0)
-   - Specific version v1.2.0: `cis-aws-foundations-benchmark-v1.2.0`
+   - ID: `cis-aws-foundations-benchmark` (defaults to v1.4.0)
    - Specific version v1.4.0: `cis-aws-foundations-benchmark-v1.4.0`
+   - Specific version v3.0.0: `cis-aws-foundations-benchmark-v3.0.0`
    - Industry standard best practices for securing AWS
 
 3. **Payment Card Industry Data Security Standard (PCI DSS)**
