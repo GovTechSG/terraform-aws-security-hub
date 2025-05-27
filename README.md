@@ -47,9 +47,29 @@ module "security_hub" {
   ]
 
   disabled_controls = {
-    "aws-foundational-security-best-practices" = ["IAM.1", "EC2.10"]
-    "cis-aws-foundations-benchmark" = ["1.10", "2.7"]
+    "aws-foundational-security-best-practices" = [
+      {
+        control_id = "IAM.1"
+        reason     = "Root account required for automation"
+      },
+      {
+        control_id = "EC2.10"
+        reason     = "Using alternative VPC architecture"
+      }
+    ]
+    "cis-aws-foundations-benchmark" = [
+      {
+        control_id = "1.10"
+      },  # Will use default reason
+      {
+        control_id = "2.7"
+        reason     = "Using alternative encryption mechanism"
+      }
+    ]
   }
+
+  # Optional: Set default reason for disabled controls
+  default_disabled_reason = "Disabled as per security policy"
 
   tags = {
     Environment = "production"
@@ -95,7 +115,8 @@ For a detailed list of controls that can be disabled, see the [Security Controls
 |------|-------------|------|---------|----------|
 | `enabled` | Whether to enable AWS Security Hub | `bool` | `true` | no |
 | `enable_standards` | List of security standards to enable | `list(string)` | `[]` | no |
-| `disabled_controls` | Map of security standards to list of controls to disable | `map(list(string))` | `{}` | no |
+| `disabled_controls` | Map of security standards to controls to disable with optional custom reasons | `map(list(object({control_id=string,reason=optional(string)})))` | `{}` | no |
+| `default_disabled_reason` | Default reason to use when disabling controls if no specific reason is provided | `string` | `"Disabled through Terraform"` | no |
 | `tags` | Tags to be applied to all resources created by this module | `map(string)` | `{}` | no |
 
 ## Outputs

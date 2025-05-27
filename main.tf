@@ -24,7 +24,8 @@ locals {
     for standard, controls in var.disabled_controls : [
       for control in controls : {
         standard = standard
-        control  = control
+        control  = control.control_id
+        reason   = coalesce(control.reason, var.default_disabled_reason)
       }
     ]
   ])
@@ -72,7 +73,7 @@ resource "aws_securityhub_standards_control" "disabled_controls" {
     each.value.control
   )
   control_status        = "DISABLED"
-  disabled_reason       = "Disabled through Terraform"
+  disabled_reason       = each.value.reason
 
   depends_on = [aws_securityhub_standards_subscription.standards]
 }

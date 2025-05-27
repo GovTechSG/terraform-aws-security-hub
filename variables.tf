@@ -8,7 +8,7 @@ variable "enable_standards" {
   description = "List of security standards to enable. Available options: aws-foundational-security-best-practices, cis-aws-foundations-benchmark, pci-dss"
   type        = list(string)
   default     = []
-  
+
   validation {
     condition = alltrue([
       for standard in var.enable_standards :
@@ -28,15 +28,26 @@ variable "enable_standards" {
 }
 
 variable "disabled_controls" {
-  description = "Map of security standards to list of controls to disable"
-  type        = map(list(string))
-  default     = {}
-  
+  description = "Map of security standards to controls to disable with optional custom reasons"
+  type = map(list(object({
+    control_id = string
+    reason     = optional(string)
+  })))
+  default = {}
+
   # Example:
   # {
-  #   "aws-foundational-security-best-practices" = ["IAM.1", "EC2.1"]
-  #   "cis-aws-foundations-benchmark" = ["1.1", "1.2"]
+  #   "aws-foundational-security-best-practices" = [
+  #     { control_id = "IAM.1", reason = "Using alternate IAM configuration" },
+  #     { control_id = "EC2.1" }  # Will use default reason if not specified
+  #   ]
   # }
+}
+
+variable "default_disabled_reason" {
+  description = "Default reason to use when disabling controls if no specific reason is provided"
+  type        = string
+  default     = "Disabled through Terraform"
 }
 
 variable "tags" {

@@ -68,7 +68,7 @@ NIST SP 800-53 controls are mapped to various AWS security practices for federal
 
 ## How to Disable Controls
 
-To disable specific controls, use the `disabled_controls` variable in your module configuration:
+To disable specific controls, use the `disabled_controls` variable in your module configuration. You can optionally provide a custom reason for each disabled control:
 
 ```hcl
 module "security_hub" {
@@ -76,12 +76,41 @@ module "security_hub" {
 
   enable_standards = ["aws-foundational-security-best-practices", "cis-aws-foundations-benchmark"]
 
+  # Disable controls with custom reasons
   disabled_controls = {
-    "aws-foundational-security-best-practices" = ["IAM.1", "EC2.10"]
-    "cis-aws-foundations-benchmark" = ["1.10", "2.7"]
+    "aws-foundational-security-best-practices" = [
+      {
+        control_id = "IAM.1"
+        reason     = "Using alternative IAM configuration"
+      },
+      {
+        control_id = "EC2.10"
+        reason     = "Using direct internet access for specific workloads"
+      }
+    ],
+    "cis-aws-foundations-benchmark" = [
+      {
+        control_id = "1.10"
+        reason     = "Using SSO instead of IAM users"
+      },
+      {
+        control_id = "2.7"  # Will use default reason
+      }
+    ]
   }
+
+  # Optional: Set a default reason for controls without specific reasons
+  default_disabled_reason = "Disabled as per security policy v2.1"
 }
 ```
+
+### Custom Disable Reasons
+
+Each disabled control can have:
+- A `control_id`: The ID of the control to disable (required)
+- A `reason`: A custom reason for disabling the control (optional)
+
+If no reason is provided for a control, the module will use the value from `default_disabled_reason` (defaults to "Disabled through Terraform").
 
 ## Best Practices for Disabling Controls
 

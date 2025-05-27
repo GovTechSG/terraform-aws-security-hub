@@ -14,17 +14,32 @@ module "security_hub" {
     "pci-dss"
   ]
 
-  # Disable specific controls within standards
+  # Disable specific controls within standards with custom reasons
   disabled_controls = {
     "aws-foundational-security-best-practices" = [
-      "IAM.1",    # IAM root user access key should not exist
-      "EC2.10",   # EC2 should be configured to use VPC endpoints
-    ]
+      {
+        control_id = "IAM.1"
+        reason     = "Root account is required for specific automation tasks"
+      },
+      {
+        control_id = "EC2.10"
+        reason     = "Using alternative VPC architecture without endpoints"
+      }
+    ],
     "cis-aws-foundations-benchmark" = [
-      "IAM.6",        # Ensure IAM password policy prevents password reuse
-      "CloudTrail.2"  # Ensure CloudTrail logs are encrypted at rest using KMS CMKs
+      {
+        control_id = "1.6"
+        reason     = "Using SSO instead of IAM users"
+      },
+      {
+        control_id = "2.7"
+        reason     = "Using alternative encryption mechanism for CloudTrail logs"
+      }
     ]
   }
+
+  # Optional: Override the default disabled reason
+  default_disabled_reason = "Disabled as per security policy v2.1"
 
   # Add custom tags
   tags = {
