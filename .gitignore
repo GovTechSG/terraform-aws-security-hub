@@ -1,3 +1,5 @@
+.vscode/
+.github/
 # Local .terraform directories
 .terraform/
 
