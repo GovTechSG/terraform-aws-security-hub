@@ -1,5 +1,5 @@
 .vscode/
-.github/
+.github/copilot*
 # Local .terraform directories
 .terraform/
 

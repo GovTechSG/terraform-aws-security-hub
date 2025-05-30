@@ -1,0 +1,60 @@
+name: "Tag and Release"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.tf'
+      - 'CHANGELOG.md'
+
+jobs:
+  tag-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Git
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Extract version from CHANGELOG
+        id: extract-version
+        run: |
+          VERSION=$(grep -m 1 '## \[' CHANGELOG.md | sed 's/## \[//g' | sed 's/\].*//g')
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Detected version: ${VERSION}"
+
+      - name: Check if tag exists
+        id: check-tag
+        run: |
+          if git rev-parse "v${{ steps.extract-version.outputs.VERSION }}" >/dev/null 2>&1; then
+            echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
+            echo "Tag v${{ steps.extract-version.outputs.VERSION }} already exists"
+          else
+            echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
+            echo "Tag v${{ steps.extract-version.outputs.VERSION }} does not exist yet"
+          fi
+
+      - name: Create and push tag
+        if: steps.check-tag.outputs.TAG_EXISTS == 'false'
+        run: |
+          git tag "v${{ steps.extract-version.outputs.VERSION }}"
+          git push origin "v${{ steps.extract-version.outputs.VERSION }}"
+
+      - name: Create GitHub Release
+        if: steps.check-tag.outputs.TAG_EXISTS == 'false'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v${{ steps.extract-version.outputs.VERSION }}"
+          name: "Release v${{ steps.extract-version.outputs.VERSION }}"
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
