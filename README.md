@@ -1,4 +1,6 @@
-# terraform-aws-security```hcl
+# terraform-aws-security
+
+```hcl
 module "security_hub" {
   source = "github.com/govtechsg/terraform-aws-security-hub"
 
@@ -17,7 +19,9 @@ module "security_hub" {
     Project     = "security-compliance"
   }
 }
-```his Terraform module enables and configures AWS Security Hub for your AWS account. It allows you to:
+```
+
+This Terraform module enables and configures AWS Security Hub for your AWS account. It allows you to:
 
 - Enable AWS Security Hub in your account/region
 - Select and enable specific Security Hub standards (rulesets), such as AWS Foundational Security Best Practices, CIS, PCI DSS, etc.
